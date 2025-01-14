@@ -3,14 +3,8 @@
 #include <string.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
+#include "msg-v.h"
 
-#define MSG_SIZE 256
-
-// 消息结构
-struct msg_buffer {
-    long msg_type; // 消息类型
-    char msg_text[MSG_SIZE]; // 消息内容
-};
 
 int main() {
     key_t key;
@@ -25,13 +19,16 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    // 接收消息
-    for (int i = 0; i < 5; i++) {
-        msgrcv(msgid, &message, sizeof(message.msg_text), 1, 0); // 接收消息
-        printf("Received: %s\n", message.msg_text);
+    //接收
+    while (1) {
+        if (msgrcv(msgid, &message, sizeof(message.msg_text), CUSTOM_EVENT2, 0) == -1) {
+            perror("msgrcv");
+            exit(EXIT_FAILURE);
+        }
+        printf("Receiver: %s\n", message.msg_text);
     }
 
-    // 删除消息队列
     msgctl(msgid, IPC_RMID, NULL);
+
     return 0;
 }
