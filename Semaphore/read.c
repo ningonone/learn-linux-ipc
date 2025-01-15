@@ -9,7 +9,7 @@
 
 void sem_wait(int semid, int sem_num) {
     struct sembuf sb = {sem_num, -1, 0};
-    (semid, &sb, 1);semop
+    semop(semid, &sb, 1);
 }
 
 void sem_signal(int semid, int sem_num) {
